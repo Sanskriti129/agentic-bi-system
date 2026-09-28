@@ -1,6 +1,6 @@
 """
 Agentic Business Intelligence System - FastAPI Backend
-Uses Anthropic Claude API instead of Ollama so it works anywhere.
+Uses the Groq API (fast hosted open models) instead of Ollama so it works anywhere.
 """
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -10,7 +10,7 @@ import pandas as pd
 import sqlite3
 import os
 import json
-import anthropic
+from groq import Groq
 from datetime import datetime
 from typing import Optional
 import io
@@ -24,8 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Anthropic client (reads ANTHROPIC_API_KEY from env) ──────────────────────
-client = anthropic.Anthropic()
+# ─── Groq client (reads GROQ_API_KEY from env) ────────────────────────────────
+client = Groq()
+MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 
 # ─── In-memory dataframe store (keyed by session) ─────────────────────────────
 _df_store: dict[str, pd.DataFrame] = {}
@@ -52,14 +53,16 @@ def get_db():
 
 # ─── Agent helpers ────────────────────────────────────────────────────────────
 
-def llm_call(system: str, user: str, max_tokens: int = 800) -> str:
-    msg = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}]
+def llm_call(system: str, user: str, max_tokens: int = 2000) -> str:
+    resp = client.chat.completions.create(
+        model=MODEL,
+        max_completion_tokens=max_tokens,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
     )
-    return msg.content[0].text
+    return resp.choices[0].message.content or ""
 
 
 # ─── API Routes ───────────────────────────────────────────────────────────────

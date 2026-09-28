@@ -11,8 +11,7 @@ frontend.html  ←── HTTP/JSON ──→  backend.py (FastAPI)
                      ┌─────────────────┼──────────────────┐
                      ▼                 ▼                   ▼
                Agent 1            Agents 2-4          Memory Agent
-            (pandas KPIs)    (Claude API via        (SQLite memory.db)
-                              Anthropic SDK)
+            (pandas KPIs)    (Groq API)          (SQLite memory.db)
 ```
 
 ## Quick Start
@@ -22,10 +21,13 @@ frontend.html  ←── HTTP/JSON ──→  backend.py (FastAPI)
 pip install -r requirements.txt
 ```
 
-### 2. Set your Anthropic API key
+### 2. Set your Groq API key
+Get one at https://console.groq.com/keys, then:
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+export GROQ_API_KEY=gsk_...          # macOS/Linux
+$env:GROQ_API_KEY="gsk_..."          # Windows PowerShell
 ```
+Optional: `GROQ_MODEL` picks the model (default `openai/gpt-oss-120b`).
 
 ### 3. Start the backend
 ```bash
@@ -46,7 +48,7 @@ Go to http://localhost:8000 — the backend serves the web UI.
 
 1. On [render.com](https://render.com), choose **New → Blueprint** and connect this repo.
    Render reads `render.yaml`.
-2. Enter your `ANTHROPIC_API_KEY` when asked.
+2. Enter your `GROQ_API_KEY` when asked.
 3. The app goes live at `https://<service-name>.onrender.com`.
 
 > Free instances sleep when idle, so the first request can take ~30–60s.
@@ -59,9 +61,9 @@ Go to http://localhost:8000 — the backend serves the web UI.
 | Step | Agent | What it does |
 |------|-------|-------------|
 | 1 | Data Analysis Agent | Reads CSV, computes KPIs (sales, profit, margin, top category, etc.) |
-| 2 | Insight Generation Agent | Sends KPIs to Claude → returns 4 business insights |
-| 3 | Root Cause Agent | Sends insights → Claude finds 3 root causes |
-| 4 | Recommendation Agent | Sends root causes → Claude gives 3 actionable recommendations |
+| 2 | Insight Generation Agent | Sends KPIs to the LLM → returns 4 business insights |
+| 3 | Root Cause Agent | Sends insights → the LLM finds 3 root causes |
+| 4 | Recommendation Agent | Sends root causes → the LLM gives 3 actionable recommendations |
 | 5 | Memory Agent | Saves full run to SQLite (`memory.db`) |
 
 ## API Endpoints
@@ -80,7 +82,7 @@ Go to http://localhost:8000 — the backend serves the web UI.
 ## Notes
 
 - **Original code used Ollama/Mistral** (local LLM). This version uses the 
-  **Anthropic Claude API** — much more reliable, no GPU needed.
+  **Groq API** — fast, free tier available, no GPU needed.
 - The CSV must have columns like `Sales`, `Profit`, `Discount`, `Category`, 
   `Region`, `Segment` for full KPI extraction (Superstore format).
   Other CSVs work too — numeric columns will be picked up automatically.

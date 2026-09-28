@@ -9,5 +9,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
-      - key: ANTHROPIC_API_KEY
+      - key: GROQ_API_KEY
         sync: false  # Render asks for the value when you deploy; never commit it
