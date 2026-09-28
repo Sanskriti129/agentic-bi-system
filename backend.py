@@ -5,7 +5,7 @@ Uses Anthropic Claude API instead of Ollama so it works anywhere.
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 import pandas as pd
 import sqlite3
 import os
@@ -65,6 +65,12 @@ def llm_call(system: str, user: str, max_tokens: int = 800) -> str:
 # ─── API Routes ───────────────────────────────────────────────────────────────
 
 @app.get("/")
+def index():
+    """Serve the web UI so the whole app lives at one URL."""
+    return FileResponse(os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend.html"))
+
+
+@app.get("/api/health")
 def health():
     return {"status": "ok", "service": "Agentic BI System"}
 
@@ -317,4 +323,4 @@ def run_full_pipeline(session_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

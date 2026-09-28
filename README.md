@@ -33,11 +33,24 @@ python backend.py
 # Server runs at http://localhost:8000
 ```
 
-### 4. Open the frontend
-Just open `frontend.html` in your browser (double-click it).
+### 4. Open the app
+Go to http://localhost:8000 — the backend serves the web UI.
+(You can also still open `frontend.html` directly in your browser.)
 
 > **Note:** The frontend connects to `http://localhost:8000` by default.
 > You can change this in the sidebar's Config section.
+
+---
+
+## Deploy (Render, free)
+
+1. On [render.com](https://render.com), choose **New → Blueprint** and connect this repo.
+   Render reads `render.yaml`.
+2. Enter your `ANTHROPIC_API_KEY` when asked.
+3. The app goes live at `https://<service-name>.onrender.com`.
+
+> Free instances sleep when idle, so the first request can take ~30–60s.
+> `memory.db` is reset on each redeploy.
 
 ---
 

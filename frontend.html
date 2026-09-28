@@ -1111,6 +1111,12 @@ async function loadHistory() {
 
 // ── UTILITIES ─────────────────────────────────────────────────────────────────
 
+// When served by the backend (e.g. the live Render deploy), talk to the same origin.
+// When opened as a local file, keep the localhost default.
+if (location.protocol.startsWith('http')) {
+  document.getElementById('backendUrl').value = location.origin;
+}
+
 function api(path) {
   return (document.getElementById('backendUrl').value || 'http://localhost:8000') + path;
 }
