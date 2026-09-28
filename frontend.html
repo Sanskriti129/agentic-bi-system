@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic BI System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --cream: #ede8da;
+    --accent: #c84b31;
+    --gold: #c9963a;
+    --muted: #7a7168;
+    --border: #d4cfc3;
+    --card: #faf7f2;
+    --success: #2e7d32;
+    --shadow: 0 2px 20px rgba(13,13,13,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── LAYOUT ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: var(--cream);
+    border-right: 1px solid var(--border);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-section {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 16px 0 8px;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .step-item:hover { background: var(--border); }
+  .step-item.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .step-item.done { border-color: var(--success); background: #f0f7f0; }
+  .step-item.done .step-num { background: var(--success); color: white; }
+
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-item.active .step-num { background: var(--accent); }
+
+  .step-label {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .step-desc {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .step-item.active .step-desc { color: #aaa; }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 48px 56px;
+    overflow-y: auto;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--card);
+    position: relative;
+  }
+
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: #fdf5f3;
+  }
+
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .upload-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .upload-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .upload-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ── BUTTON ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 4px;
+  }
+
+  .btn:hover { background: var(--accent); border-color: var(--accent); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+  .btn-danger { background: var(--accent); border-color: var(--accent); }
+  .btn-danger:hover { background: #a33525; border-color: #a33525; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 3px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .kpi-card {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 60px; height: 60px;
+    background: var(--accent);
+    opacity: 0.15;
+    border-radius: 50%;
+    transform: translate(20px, 20px);
+  }
+
+  .kpi-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  /* ── INSIGHT ITEMS ── */
+  .insight-list { list-style: none; }
+
+  .insight-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .insight-item:last-child { border-bottom: none; }
+
+  .insight-num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--border);
+    line-height: 1;
+    min-width: 36px;
+  }
+
+  .insight-text {
+    font-size: 14px;
+    line-height: 1.7;
+    padding-top: 4px;
+  }
+
+  /* ── ROOT CAUSE ── */
+  .rc-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: var(--card);
+  }
+
+  .rc-icon {
+    width: 40px; height: 40px;
+    background: var(--gold);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .rc-text { font-size: 14px; line-height: 1.6; }
+  .rc-cause { font-weight: 700; margin-bottom: 4px; }
+  .rc-reason { color: var(--muted); font-size: 13px; }
+
+  /* ── RECOMMENDATIONS ── */
+  .rec-item {
+    padding: 20px;
+    border-left: 4px solid var(--accent);
+    background: var(--card);
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 16px;
+  }
+
+  .rec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .rec-action { font-size: 14px; line-height: 1.6; font-weight: 600; flex: 1; }
+
+  .rec-impact {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--success);
+    padding: 4px 8px;
+    background: #f0f7f0;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  /* ── LOADING ── */
+  .loading-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 3px;
+    margin: 20px 0;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .loading-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    padding: 8px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ALERTS ── */
+  .alert {
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .alert-error { background: #fdf0ee; border: 1px solid #f5c6be; color: #7a2016; }
+  .alert-success { background: #f0f7f0; border: 1px solid #c3e6c3; color: #1a4a1a; }
+  .alert-info { background: #f0f4ff; border: 1px solid #c3d0f5; color: #1a2a6a; }
+
+  /* ── HISTORY TABLE ── */
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .history-table th {
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .history-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .history-table tr:last-child td { border-bottom: none; }
+  .history-table tr:hover td { background: var(--cream); }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 32px 0;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── PIPELINE RUN ── */
+  .pipeline-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card);
+    transition: all 0.2s;
+  }
+
+  .pipeline-step.running {
+    border-color: var(--gold);
+    background: #fdf9f0;
+  }
+
+  .pipeline-step.done {
+    border-color: var(--success);
+    background: #f0f7f0;
+  }
+
+  .pipeline-step-icon {
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+  }
+
+  .pipeline-step-label {
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .pipeline-step-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .pipeline-step.running .pipeline-step-status { color: var(--gold); }
+  .pipeline-step.done .pipeline-step-status { color: var(--success); }
+
+  /* ── PREVIEW TABLE ── */
+  .preview-table-wrap { overflow-x: auto; }
+
+  .preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .preview-table th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .preview-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  /* ── RUN ALL BUTTON ── */
+  .run-all-section {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 8px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .run-all-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .run-all-desc {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #aaa;
+  }
+
+  .btn-run {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 14px 32px;
+  }
+
+  .btn-run:hover { background: #e05535; border-color: #e05535; }
+
+  /* ── RESULTS SECTION ── */
+  .results-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 28px;
+  }
+
+  .tab-btn {
+    padding: 10px 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+    aside { display: none; }
+    main { padding: 32px 24px; }
+    .run-all-section { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div>
+      <div class="logo-text">Agentic BI System</div>
+      <div class="logo-sub">4-Agent Intelligence Pipeline</div>
+    </div>
+  </div>
+  <div class="header-right" id="statusBar">Ready</div>
+</header>
+
+<div class="main-grid">
+  <aside>
+    <div class="sidebar-section">Pipeline</div>
+
+    <div class="step-item active" id="nav-upload" onclick="showPage('upload')">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-label">Upload Data</div>
+        <div class="step-desc">CSV dataset</div>
+      </div>
+    </div>
+
+    <div class="step-item" id="nav-run" onclick="showPage('run')">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-label">Run Pipeline</div>
+        <div class="step-desc">All 4 agents</div>
+      </div>
+    </div>
+
+    <div class="step-item" id="nav-results" onclick="showPage('results')">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-label">View Results</div>
+        <div class="step-desc">Insights & actions</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="margin-top:24px;">Memory</div>
+
+    <div class="step-item" id="nav-history" onclick="showPage('history'); loadHistory();">
+      <div class="step-num">📋</div>
+      <div>
+        <div class="step-label">History</div>
+        <div class="step-desc">Past runs</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="margin-top:24px;">Config</div>
+    <div style="padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted);">
+      <div style="margin-bottom:8px;">Backend URL:</div>
+      <input id="backendUrl" value="http://localhost:8000" style="width:100%; padding:6px 8px; font-family:inherit; font-size:11px; border:1px solid var(--border); border-radius:3px; background:var(--paper); color:var(--ink);">
+    </div>
+  </aside>
+
+  <main>
+    <!-- ── PAGE: UPLOAD ── -->
+    <div class="page active" id="page-upload">
+      <div class="page-title">Upload Dataset</div>
+      <div class="page-subtitle">Agent 1 will compute KPIs automatically from your CSV</div>
+
+      <div id="uploadAlert"></div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept=".csv" onchange="handleFileSelect(event)">
+        <span class="upload-icon">📂</span>
+        <div class="upload-title">Drop your CSV here</div>
+        <div class="upload-hint">or click to browse · Superstore format recommended</div>
+      </div>
+
+      <div id="uploadPreview" style="display:none; margin-top:24px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-badge">✓ Uploaded</span>
+            <span class="card-title" id="uploadedFilename">–</span>
+          </div>
+          <div style="display:flex; gap:32px; margin-bottom:20px; font-family:'IBM Plex Mono',monospace; font-size:12px;">
+            <div>
+              <div style="color:var(--muted); margin-bottom:4px;">Rows</div>
+              <div id="previewRows" style="font-size:20px; font-weight:700;">–</div>
+            </div>
+            <div>
+              <div style="color:var(--muted); margin-bottom:4px;">Columns</div>
+              <div id="previewCols" style="font-size:20px; font-weight:700;">–</div>
+            </div>
+            <div>
+              <div style="color:var(--muted); margin-bottom:4px;">Session ID</div>
+              <div id="previewSession" style="font-size:11px; padding-top:6px;">–</div>
+            </div>
+          </div>
+          <div class="preview-table-wrap">
+            <table class="preview-table" id="previewTable"></table>
+          </div>
+        </div>
+
+        <div class="run-all-section">
+          <div>
+            <div class="run-all-title">Ready to Analyse</div>
+            <div class="run-all-desc">4 agents will process your data end-to-end</div>
+          </div>
+          <button class="btn btn-run" onclick="runPipeline()">▶ Run All Agents</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: RUN ── -->
+    <div class="page" id="page-run">
+      <div class="page-title">Running Pipeline</div>
+      <div class="page-subtitle">4-agent chain: Data → Insights → Root Causes → Recommendations</div>
+
+      <div id="pipelineStatus">
+        <div class="alert alert-info">⚡ Upload a CSV on the previous page, then click "Run All Agents"</div>
+      </div>
+
+      <div class="pipeline-progress" id="pipelineProgress">
+        <div class="pipeline-step" id="ps-1">
+          <div class="pipeline-step-icon">🔢</div>
+          <div class="pipeline-step-label">Agent 1 — Data Analysis</div>
+          <div class="pipeline-step-status">waiting</div>
+        </div>
+        <div class="pipeline-step" id="ps-2">
+          <div class="pipeline-step-icon">💡</div>
+          <div class="pipeline-step-label">Agent 2 — Insight Generation</div>
+          <div class="pipeline-step-status">waiting</div>
+        </div>
+        <div class="pipeline-step" id="ps-3">
+          <div class="pipeline-step-icon">🔍</div>
+          <div class="pipeline-step-label">Agent 3 — Root Cause Analysis</div>
+          <div class="pipeline-step-status">waiting</div>
+        </div>
+        <div class="pipeline-step" id="ps-4">
+          <div class="pipeline-step-icon">🎯</div>
+          <div class="pipeline-step-label">Agent 4 — Recommendations</div>
+          <div class="pipeline-step-status">waiting</div>
+        </div>
+        <div class="pipeline-step" id="ps-5">
+          <div class="pipeline-step-icon">💾</div>
+          <div class="pipeline-step-label">Memory Agent — Save Results</div>
+          <div class="pipeline-step-status">waiting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: RESULTS ── -->
+    <div class="page" id="page-results">
+      <div class="page-title">Analysis Results</div>
+      <div class="page-subtitle">AI-generated insights from your business data</div>
+
+      <div id="noResults">
+        <div class="alert alert-info">📊 Run the pipeline first to see results here</div>
+      </div>
+
+      <div id="resultsContent" style="display:none;">
+        <div class="results-tabs">
+          <button class="tab-btn active" onclick="showTab('kpis')">KPIs</button>
+          <button class="tab-btn" onclick="showTab('insights')">Insights</button>
+          <button class="tab-btn" onclick="showTab('root-causes')">Root Causes</button>
+          <button class="tab-btn" onclick="showTab('recommendations')">Recommendations</button>
+        </div>
+
+        <!-- KPIs Tab -->
+        <div class="tab-panel active" id="tab-kpis">
+          <div class="kpi-grid" id="kpiGrid"></div>
+        </div>
+
+        <!-- Insights Tab -->
+        <div class="tab-panel" id="tab-insights">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-badge">Agent 2</span>
+              <span class="card-title">Business Insights</span>
+            </div>
+            <ul class="insight-list" id="insightList"></ul>
+          </div>
+        </div>
+
+        <!-- Root Causes Tab -->
+        <div class="tab-panel" id="tab-root-causes">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-badge">Agent 3</span>
+              <span class="card-title">Root Cause Analysis</span>
+            </div>
+            <div id="rootCauseList"></div>
+          </div>
+        </div>
+
+        <!-- Recommendations Tab -->
+        <div class="tab-panel" id="tab-recommendations">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-badge">Agent 4</span>
+              <span class="card-title">Strategic Recommendations</span>
+            </div>
+            <div id="recList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: HISTORY ── -->
+    <div class="page" id="page-history">
+      <div class="page-title">Run History</div>
+      <div class="page-subtitle">Past pipeline executions stored in memory</div>
+
+      <div id="historyContent">
+        <div class="loading-bar"></div>
+        <div class="loading-text">Loading history…</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let sessionId = null;
+let pipelineResults = null;
+
+// ── NAVIGATION ──────────────────────────────────────────────────────────────
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.step-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const nav = document.getElementById('nav-' + name);
+  if (nav) nav.classList.add('active');
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── FILE UPLOAD ──────────────────────────────────────────────────────────────
+
+async function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  await uploadFile(file);
+}
+
+// Drag-and-drop
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', async e => {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) await uploadFile(file);
+});
+
+async function uploadFile(file) {
+  setAlert('uploadAlert', 'info', '⏳ Uploading…');
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch(api('/api/upload'), { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Upload failed');
+
+    sessionId = data.session_id;
+    setAlert('uploadAlert', 'success', `✓ Uploaded ${file.name} — ${data.rows.toLocaleString()} rows, ${data.columns.length} columns`);
+
+    document.getElementById('uploadedFilename').textContent = file.name;
+    document.getElementById('previewRows').textContent = data.rows.toLocaleString();
+    document.getElementById('previewCols').textContent = data.columns.length;
+    document.getElementById('previewSession').textContent = sessionId;
+
+    buildPreviewTable(data.columns, data.preview);
+    document.getElementById('uploadPreview').style.display = 'block';
+    document.getElementById('nav-run').classList.add('done');
+    setStatus('File ready · Session: ' + sessionId.slice(-8));
+  } catch (err) {
+    setAlert('uploadAlert', 'error', '✗ ' + err.message);
+  }
+}
+
+function buildPreviewTable(columns, rows) {
+  const table = document.getElementById('previewTable');
+  const head = columns.map(c => `<th>${c}</th>`).join('');
+  const body = rows.map(row =>
+    `<tr>${columns.map(c => `<td>${row[c] ?? ''}</td>`).join('')}</tr>`
+  ).join('');
+  table.innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
+}
+
+// ── PIPELINE ─────────────────────────────────────────────────────────────────
+
+async function runPipeline() {
+  if (!sessionId) { alert('Upload a CSV file first!'); return; }
+
+  showPage('run');
+  resetPipelineUI();
+  setStatus('Pipeline running…');
+
+  // Step through visually while calling the combined endpoint
+  setStep(1, 'running', 'computing KPIs…');
+  await sleep(400);
+
+  try {
+    const res = await fetch(api(`/api/pipeline/${sessionId}`), { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Pipeline failed');
+
+    pipelineResults = data;
+
+    setStep(1, 'done', `✓ ${Object.keys(data.kpis).length} KPIs`);
+    await sleep(300);
+    setStep(2, 'running', 'generating insights…');
+    await sleep(600);
+    setStep(2, 'done', `✓ ${data.insights.length} insights`);
+    await sleep(300);
+    setStep(3, 'running', 'finding root causes…');
+    await sleep(600);
+    setStep(3, 'done', `✓ ${data.root_causes.length} root causes`);
+    await sleep(300);
+    setStep(4, 'running', 'building recommendations…');
+    await sleep(600);
+    setStep(4, 'done', `✓ ${data.recommendations.length} actions`);
+    await sleep(300);
+    setStep(5, 'done', '✓ saved to memory');
+
+    document.getElementById('pipelineStatus').innerHTML =
+      '<div class="alert alert-success">✅ Pipeline complete! Switch to <strong>View Results</strong> to explore.</div>';
+
+    renderResults(data);
+    document.getElementById('nav-results').classList.add('done');
+
+    setTimeout(() => { showPage('results'); }, 800);
+    setStatus('✓ Pipeline complete');
+  } catch (err) {
+    document.getElementById('pipelineStatus').innerHTML =
+      `<div class="alert alert-error">✗ Error: ${err.message}</div>`;
+    setStatus('Error');
+  }
+}
+
+function resetPipelineUI() {
+  [1,2,3,4,5].forEach(i => setStep(i, '', 'waiting'));
+  document.getElementById('pipelineStatus').innerHTML = '';
+}
+
+function setStep(n, cls, text) {
+  const el = document.getElementById('ps-' + n);
+  el.className = 'pipeline-step ' + cls;
+  el.querySelector('.pipeline-step-status').textContent = text;
+}
+
+// ── RENDER RESULTS ────────────────────────────────────────────────────────────
+
+function renderResults(data) {
+  document.getElementById('noResults').style.display = 'none';
+  document.getElementById('resultsContent').style.display = 'block';
+
+  // KPIs
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML = Object.entries(data.kpis).map(([k, v]) => {
+    const label = k.replace(/_/g, ' ').toUpperCase();
+    const display = typeof v === 'number' ? (Number.isInteger(v) ? v.toLocaleString() : v.toFixed(2)) : v;
+    return `<div class="kpi-card">
+      <div class="kpi-label">${label}</div>
+      <div class="kpi-value">${typeof display === 'number' && k.includes('sales') ? '$' + display.toLocaleString() : display}</div>
+    </div>`;
+  }).join('');
+
+  // Insights
+  document.getElementById('insightList').innerHTML = data.insights.map((ins, i) =>
+    `<li class="insight-item">
+      <span class="insight-num">0${i+1}</span>
+      <span class="insight-text">${ins}</span>
+    </li>`
+  ).join('');
+
+  // Root Causes
+  const icons = ['🔴', '🟡', '🟠'];
+  document.getElementById('rootCauseList').innerHTML = data.root_causes.map((rc, i) => {
+    const parts = rc.split(' — ');
+    return `<div class="rc-item">
+      <div class="rc-icon">${icons[i] || '🔵'}</div>
+      <div class="rc-text">
+        <div class="rc-cause">${parts[0] || rc}</div>
+        <div class="rc-reason">${parts[1] || ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Recommendations
+  document.getElementById('recList').innerHTML = data.recommendations.map((rec, i) => {
+    const impactMatch = rec.match(/Expected impact: (.+)$/);
+    const action = rec.replace(/— Expected impact:.+$/, '').trim();
+    const impact = impactMatch ? impactMatch[1] : '';
+    return `<div class="rec-item">
+      <div class="rec-header">
+        <div class="rec-action"><strong>Action ${i+1}:</strong> ${action}</div>
+        ${impact ? `<div class="rec-impact">↑ ${impact}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── HISTORY ──────────────────────────────────────────────────────────────────
+
+async function loadHistory() {
+  const el = document.getElementById('historyContent');
+  el.innerHTML = '<div class="loading-bar"></div><div class="loading-text">Loading…</div>';
+
+  try {
+    const res = await fetch(api('/api/history'));
+    const data = await res.json();
+
+    if (!data.history.length) {
+      el.innerHTML = '<div class="alert alert-info">No history yet. Run the pipeline first.</div>';
+      return;
+    }
+
+    el.innerHTML = `
+      <div class="card" style="overflow-x:auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Timestamp</th>
+              <th>Total Sales</th>
+              <th>Profit Margin</th>
+              <th>Insights</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.history.map(row => `
+              <tr>
+                <td style="font-family:'IBM Plex Mono',monospace; font-size:11px;">${row.id}</td>
+                <td style="font-family:'IBM Plex Mono',monospace; font-size:11px;">${row.timestamp.slice(0,16).replace('T',' ')}</td>
+                <td>${row.kpis.total_sales ? '$' + Number(row.kpis.total_sales).toLocaleString() : '–'}</td>
+                <td>${row.kpis.profit_margin_pct ? row.kpis.profit_margin_pct + '%' : '–'}</td>
+                <td>${row.insights.length} insights</td>
+                <td><span style="font-family:'IBM Plex Mono',monospace; font-size:10px; padding:3px 8px; background:var(--ink); color:var(--paper); border-radius:3px;">${row.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } catch (err) {
+    el.innerHTML = `<div class="alert alert-error">✗ Could not load history: ${err.message}</div>`;
+  }
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────────────────
+
+function api(path) {
+  return (document.getElementById('backendUrl').value || 'http://localhost:8000') + path;
+}
+
+function setAlert(id, type, msg) {
+  document.getElementById(id).innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+}
+
+function setStatus(msg) {
+  document.getElementById('statusBar').textContent = msg;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>

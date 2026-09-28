@@ -1,0 +1,17 @@
+# Secrets
+.env
+.env.*
+
+# Local database created by the Memory Agent
+memory.db
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Uploaded data / OS files
+*.csv
+.DS_Store
+Thumbs.db
